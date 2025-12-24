@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motivation Pro</title>
+    <style>
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #121212; color: white; font-family: sans-serif; text-align: center; }
+        .card { padding: 30px; border-radius: 20px; background: #1e1e1e; box-shadow: 0 4px 20px rgba(0,0,0,0.5); width: 85%; }
+        button { background: #03dac6; border: none; padding: 12px 20px; border-radius: 10px; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2 id="quote-display">"Loading..."</h2>
+        <p id="author-display"></p>
+        <button onclick="requestNotify()">Enable Notifications</button>
+        <button onclick="displayNewQuote()">New Quote</button>
+    </div>
+
+    <script>
+        const quotes = [
+            { text: "Success is not final, failure is not fatal.", author: "Winston Churchill" },
+            { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+            { text: "Your time is limited, don't waste it.", author: "Steve Jobs" }
+        ];
+
+        function displayNewQuote() {
+            const quote = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            // Save to LocalStorage
+            localStorage.setItem('lastQuote', JSON.stringify(quote));
+            
+            updateUI(quote);
+            sendNotification(quote.text);
+        }
+
+        function updateUI(quote) {
+            document.getElementById('quote-display').innerText = `"${quote.text}"`;
+            document.getElementById('author-display').innerText = `- ${quote.author}`;
+        }
+
+        // Check if there is a saved quote when opening
+        window.onload = () => {
+            const saved = localStorage.getItem('lastQuote');
+            if (saved) {
+                updateUI(JSON.parse(saved));
+            } else {
+                displayNewQuote();
+            }
+        };
+
+        // Push Notification Logic
+        function requestNotify() {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    alert("Notifications enabled!");
+                }
+            });
+        }
+
+        function sendNotification(message) {
+            if (Notification.permission === "granted") {
+                new Notification("Time for Motivation!", {
+                    body: message,
+                    icon: "https://via.placeholder.com/128" 
+                });
+            }
+        }
+    </script>
+</body>
+</html>
